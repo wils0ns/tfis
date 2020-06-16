@@ -20,7 +20,7 @@ func GetProperties(resourceType string) []string {
 	return strings.SplitN(resourceType, "_", 2)
 }
 
-func InitResource(resourceType string) *TerraformResource {
+func New(resourceType string) *TerraformResource {
 	tr := &TerraformResource{}
 	tr.Type = resourceType
 

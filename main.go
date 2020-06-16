@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	resource := resource.InitResource(os.Args[1])
+	resource := resource.New(os.Args[1])
 	url, err := resource.GetDocUrl()
 	if err != nil {
 		PrintErrorAndExist(err)
