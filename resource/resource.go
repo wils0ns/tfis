@@ -1,7 +1,7 @@
 package resource
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,10 +10,24 @@ import (
 
 const TerraformBaseUrl = "https://www.terraform.io"
 
+type docNotFoundError struct {
+	resType string
+}
+
+type importSyntaxNotFoundError struct{}
+
 type TerraformResource struct {
 	Type     string
 	Provider string
 	Name     string
+}
+
+func (e *docNotFoundError) Error() string {
+	return fmt.Sprintf("Unable to find documentation for %v", e.resType)
+}
+
+func (e *importSyntaxNotFoundError) Error() string {
+	return "Unable to find import syntax in documentation"
 }
 
 func GetProperties(resourceType string) []string {
@@ -45,7 +59,7 @@ func (r *TerraformResource) GetDocUrl() (string, error) {
 		}
 	}
 
-	return "", errors.New("Unable to find documentation for " + r.Type)
+	return "", &docNotFoundError{r.Type}
 
 }
 
@@ -68,7 +82,7 @@ func (r *TerraformResource) GetImportSyntaxes() ([]string, error) {
 	})
 
 	if len(syntaxes) == 0 {
-		return nil, errors.New("Unable to find import syntax in documentation")
+		return nil, &importSyntaxNotFoundError{}
 	}
 	return syntaxes, nil
 }
