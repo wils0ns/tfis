@@ -11,14 +11,14 @@ func main() {
 	resource := resource.New(os.Args[1])
 	url, err := resource.GetDocUrl()
 	if err != nil {
-		PrintErrorAndExist(err)
+		PrintErrorAndExit(err)
 	}
 	fmt.Println("==>", resource.Type)
 	fmt.Println("Documentation URL:", url)
 
 	syntaxes, err := resource.GetImportSyntaxes()
 	if err != nil {
-		PrintErrorAndExist(err)
+		PrintErrorAndExit(err)
 	}
 
 	fmt.Println("Import formats:")
@@ -27,7 +27,7 @@ func main() {
 	}
 }
 
-func PrintErrorAndExist(e error) {
+func PrintErrorAndExit(e error) {
 	fmt.Fprintf(os.Stderr, "error: %v\n", e)
 	os.Exit(1)
 }
