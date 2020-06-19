@@ -1,4 +1,4 @@
-module github.com/wilson-codeminus/terraform-import-syntax
+module github.com/wilson-codeminus/tfis
 
 go 1.14
 

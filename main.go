@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	resource "github.com/wilson-codeminus/terraform-import-syntax/resource"
+	resource "github.com/wilson-codeminus/tfis/resource"
 )
 
 func main() {
