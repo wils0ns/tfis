@@ -17,7 +17,7 @@ func main() {
 	fmt.Println("==>", resource.Type)
 	fmt.Println("Documentation URL:", url)
 
-	syntaxes, err := resource.GetImportSyntaxes()
+	syntaxes, err := resource.GetImportSyntaxes(nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)

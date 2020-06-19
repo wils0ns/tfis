@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -14,7 +15,9 @@ type docNotFoundError struct {
 	resType string
 }
 
-type importSyntaxNotFoundError struct{}
+type importSyntaxNotFoundError struct {
+	String string
+}
 
 type TerraformResource struct {
 	Type     string
@@ -63,13 +66,32 @@ func (r *TerraformResource) GetDocUrl() (string, error) {
 
 }
 
-func (r *TerraformResource) GetImportSyntaxes() ([]string, error) {
+func (r *TerraformResource) GetImportSyntaxes(reader io.Reader) ([]string, error) {
 	url, err := r.GetDocUrl()
 	if err != nil {
 		return nil, err
 	}
 
-	doc, err := goquery.NewDocument(url)
+	if reader == nil {
+		req, err := http.NewRequest("GET", url, nil)
+
+		if err != nil {
+			return nil, err
+		}
+
+		client := &http.Client{}
+		res, err := client.Do(req)
+
+		if err != nil {
+			return nil, err
+		}
+
+		reader = res.Body
+
+	}
+
+	doc, err := goquery.NewDocumentFromReader(reader)
+	// doc, err := goquery.NewDocument(url)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +100,7 @@ func (r *TerraformResource) GetImportSyntaxes() ([]string, error) {
 	doc.Find("pre").Each(func(i int, item *goquery.Selection) {
 		if strings.Contains(item.Text(), "terraform import "+r.Type) {
 			for _, i := range strings.Split(strings.TrimSpace(item.Text()), "\n") {
-				syntaxes = append(syntaxes, i[2:])
+				syntaxes = append(syntaxes, strings.TrimSpace(i)[2:])
 			}
 		}
 	})

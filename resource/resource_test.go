@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -82,14 +83,21 @@ func TestGetImportSyntaxes(t *testing.T) {
 
 	samples := []struct {
 		resType                string
+		fakeHTML               string
 		expectedImportSyntaxes []string
 	}{
 		{
 			"google_project",
+			`<pre><code>$ terraform import google_project.my_project your-project-id
+			</code></pre>`,
 			[]string{"terraform import google_project.my_project your-project-id"},
 		},
 		{
 			"google_datastore_index",
+			`<pre class="highlight plaintext"><code>$ terraform import google_datastore_index.default projects/{{project}}/indexes/{{index_id}}
+			$ terraform import google_datastore_index.default {{project}}/{{index_id}}
+			$ terraform import google_datastore_index.default {{index_id}}
+			</code></pre>`,
 			[]string{
 				"terraform import google_datastore_index.default projects/{{project}}/indexes/{{index_id}}",
 				"terraform import google_datastore_index.default {{project}}/{{index_id}}",
@@ -104,7 +112,11 @@ func TestGetImportSyntaxes(t *testing.T) {
 		t.Run(sample.resType, func(t *testing.T) {
 			t.Parallel()
 			res := New(sample.resType)
-			isyntaxes, err := res.GetImportSyntaxes()
+
+			w := httptest.NewRecorder()
+			w.WriteString(sample.fakeHTML)
+
+			isyntaxes, err := res.GetImportSyntaxes(w.Body)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -121,7 +133,11 @@ func TestGetImportSyntaxes(t *testing.T) {
 
 func TestGetImportSyntaxesReturnsError(t *testing.T) {
 	res := New("google_service_networking_connection")
-	_, err := res.GetImportSyntaxes()
+
+	w := httptest.NewRecorder()
+	w.WriteString("")
+
+	_, err := res.GetImportSyntaxes(w.Body)
 
 	if err == nil {
 		t.Fatal("Expected an error to be returned, got nil")
@@ -131,6 +147,7 @@ func TestGetImportSyntaxesReturnsError(t *testing.T) {
 	expectedErrType := "*resource.importSyntaxNotFoundError"
 
 	if errType != expectedErrType {
+		t.Log(err)
 		t.Errorf("Expected error to be %v, got %T", expectedErrType, errType)
 	}
 }
