@@ -86,14 +86,14 @@ func TestGetImportSyntaxes(t *testing.T) {
 	}{
 		{
 			"google_project",
-			[]string{"$ terraform import google_project.my_project your-project-id"},
+			[]string{"terraform import google_project.my_project your-project-id"},
 		},
 		{
 			"google_datastore_index",
 			[]string{
-				"$ terraform import google_datastore_index.default projects/{{project}}/indexes/{{index_id}}",
-				"$ terraform import google_datastore_index.default {{project}}/{{index_id}}",
-				"$ terraform import google_datastore_index.default {{index_id}}",
+				"terraform import google_datastore_index.default projects/{{project}}/indexes/{{index_id}}",
+				"terraform import google_datastore_index.default {{project}}/{{index_id}}",
+				"terraform import google_datastore_index.default {{index_id}}",
 			},
 		},
 	}

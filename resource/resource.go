@@ -77,7 +77,9 @@ func (r *TerraformResource) GetImportSyntaxes() ([]string, error) {
 	syntaxes := []string{}
 	doc.Find("pre").Each(func(i int, item *goquery.Selection) {
 		if strings.Contains(item.Text(), "terraform import "+r.Type) {
-			syntaxes = strings.Split(strings.TrimSpace(item.Text()), "\n")
+			for _, i := range strings.Split(strings.TrimSpace(item.Text()), "\n") {
+				syntaxes = append(syntaxes, i[2:])
+			}
 		}
 	})
 
