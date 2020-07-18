@@ -2,7 +2,15 @@
 
 Terraform import syntax
 
-Usage example:
+## Install
+
+```bash
+git clone https://github.com/wilson-codeminus/tfis.git
+cd tfis
+go install
+```
+
+## Use
 
 ```bash
 $ tfis google_datastore_index
