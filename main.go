@@ -8,6 +8,13 @@ import (
 )
 
 func main() {
+
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: tfis <RESOURCE_ADDRESS>")
+		fmt.Println("Example: tfis google_project")
+		os.Exit(0)
+	}
+
 	resource := resource.New(os.Args[1])
 	url, err := resource.GetDocUrl()
 	if err != nil {
