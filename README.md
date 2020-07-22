@@ -4,11 +4,15 @@ Terraform import syntax
 
 ## Install
 
+Using go:
+
 ```bash
 git clone https://github.com/wilson-codeminus/tfis.git
 cd tfis
 go install
 ```
+
+Or downloading the binary for a particular [release](https://github.com/wilson-codeminus/tfis/releases).
 
 ## Use
 
