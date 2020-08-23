@@ -33,22 +33,24 @@ func (e *importSyntaxNotFoundError) Error() string {
 	return "Unable to find import syntax in documentation"
 }
 
-func GetProperties(resourceType string) []string {
+func properties(resourceType string) []string {
 	return strings.SplitN(resourceType, "_", 2)
 }
 
+// New creates a new TerraformResource
 func New(resourceType string) *TerraformResource {
 	tr := &TerraformResource{}
 	tr.Type = resourceType
 
-	props := GetProperties(tr.Type)
+	props := properties(tr.Type)
 	tr.Provider = props[0]
 	tr.Name = props[1]
 
 	return tr
 }
 
-func (r *TerraformResource) GetDocUrl() (string, error) {
+// DocURL returns the resource documentation URL based on expected patterns
+func (r *TerraformResource) DocURL() (string, error) {
 
 	possibleUrls := []string{
 		TerraformBaseUrl + "/docs/providers/" + r.Provider + "/r/" + r.Name + ".html",
@@ -66,8 +68,13 @@ func (r *TerraformResource) GetDocUrl() (string, error) {
 
 }
 
-func (r *TerraformResource) GetImportSyntaxes(reader io.Reader) ([]string, error) {
-	url, err := r.GetDocUrl()
+// func (r *TerraformResource) Docs(reader *io.Reader) (string, error) {
+
+// }
+
+// ImportSyntaxes extracts the resource import syntax from the docs
+func (r *TerraformResource) ImportSyntaxes(reader io.Reader) ([]string, error) {
+	url, err := r.DocURL()
 	if err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ func main() {
 	}
 
 	resource := resource.New(os.Args[1])
-	url, err := resource.GetDocUrl()
+	url, err := resource.DocURL()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -24,7 +24,7 @@ func main() {
 	fmt.Println("==>", resource.Type)
 	fmt.Println("Documentation URL:", url)
 
-	syntaxes, err := resource.GetImportSyntaxes(nil)
+	syntaxes, err := resource.ImportSyntaxes(nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
