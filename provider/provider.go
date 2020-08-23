@@ -146,7 +146,9 @@ func ImportDocs(d *Docs) ([]string, error) {
 			if strings.Contains(code, "terraform import") {
 				is := []string{}
 				for _, i := range strings.Split(code, "\n") {
-					is = append(is, strings.Replace(i, "$ ", "", 1))
+					if i != "" {
+						is = append(is, strings.Replace(i, "$ ", "", 1))
+					}
 				}
 				return is, nil
 			}
