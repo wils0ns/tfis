@@ -1,4 +1,4 @@
-module github.com/wilson-codeminus/tfis
+module github.com/wils0ns/tfis
 
 go 1.14
 

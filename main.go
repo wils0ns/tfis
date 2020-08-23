@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	resource "github.com/wilson-codeminus/tfis/resource"
+	resource "github.com/wils0ns/tfis/resource"
 )
 
 func main() {

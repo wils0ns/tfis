@@ -7,12 +7,12 @@ Terraform import syntax
 Using go:
 
 ```bash
-git clone https://github.com/wilson-codeminus/tfis.git
+git clone https://github.com/wils0ns/tfis.git
 cd tfis
 go install
 ```
 
-Or downloading the binary for a particular [release](https://github.com/wilson-codeminus/tfis/releases).
+Or downloading the binary for a particular [release](https://github.com/wils0ns/tfis/releases).
 
 ## Use
 
