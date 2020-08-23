@@ -2,59 +2,40 @@ package resource
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/wils0ns/tfis/provider"
 )
 
-const TerraformBaseUrl = "https://www.terraform.io"
+const terraformBaseURL = "https://www.terraform.io"
 
-type docNotFoundError struct {
-	resType string
-}
-
-type importSyntaxNotFoundError struct {
-	String string
-}
-
-type TerraformResource struct {
+// Resource of Terraform
+type Resource struct {
 	Type     string
-	Provider string
+	Provider *provider.Provider
 	Name     string
 }
 
-func (e *docNotFoundError) Error() string {
-	return fmt.Sprintf("Unable to find documentation for %v", e.resType)
+// New terraform resource
+func New(name string) (*Resource, error) {
+	r := &Resource{}
+	r.Type = name
+	props := strings.SplitN(name, "_", 2)
+	p, err := provider.New(props[0])
+	if err != nil {
+		return nil, err
+	}
+	r.Name = props[1]
+	r.Provider = p
+	return r, nil
 }
 
-func (e *importSyntaxNotFoundError) Error() string {
-	return "Unable to find import syntax in documentation"
-}
-
-func properties(resourceType string) []string {
-	return strings.SplitN(resourceType, "_", 2)
-}
-
-// New creates a new TerraformResource
-func New(resourceType string) *TerraformResource {
-	tr := &TerraformResource{}
-	tr.Type = resourceType
-
-	props := properties(tr.Type)
-	tr.Provider = props[0]
-	tr.Name = props[1]
-
-	return tr
-}
-
-// DocURL returns the resource documentation URL based on expected patterns
-func (r *TerraformResource) DocURL() (string, error) {
-
+// DocsURL of the Resource
+func (r *Resource) DocsURL() (string, error) {
 	possibleUrls := []string{
-		TerraformBaseUrl + "/docs/providers/" + r.Provider + "/r/" + r.Name + ".html",
-		TerraformBaseUrl + "/docs/providers/" + r.Provider + "/r/" + r.Type + ".html",
+		fmt.Sprintf("%v/docs/providers/%v/r/%v.html", terraformBaseURL, r.Provider.Attributes.Name, r.Name),
+		fmt.Sprintf("%v/docs/providers/%v/r/%v.html", terraformBaseURL, r.Provider.Attributes.Name, r.Type),
 	}
 
 	for _, url := range possibleUrls {
@@ -63,57 +44,21 @@ func (r *TerraformResource) DocURL() (string, error) {
 			return url, nil
 		}
 	}
-
-	return "", &docNotFoundError{r.Type}
-
+	return "", fmt.Errorf("Unable to find documentions for '%v'", r.Name)
 }
 
-// func (r *TerraformResource) Docs(reader *io.Reader) (string, error) {
-
-// }
-
-// ImportSyntaxes extracts the resource import syntax from the docs
-func (r *TerraformResource) ImportSyntaxes(reader io.Reader) ([]string, error) {
-	url, err := r.DocURL()
+// ImportSyntax of the Resource
+func (r *Resource) ImportSyntax() ([]string, error) {
+	resDocs, err := r.Provider.LatestVersion().ResourceDocs(r.Name)
 	if err != nil {
-		return nil, err
-	}
-
-	if reader == nil {
-		req, err := http.NewRequest("GET", url, nil)
-
+		resDocs, err = r.Provider.LatestVersion().ResourceDocs(r.Type)
 		if err != nil {
 			return nil, err
 		}
-
-		client := &http.Client{}
-		res, err := client.Do(req)
-
-		if err != nil {
-			return nil, err
-		}
-
-		reader = res.Body
-
 	}
-
-	doc, err := goquery.NewDocumentFromReader(reader)
-	// doc, err := goquery.NewDocument(url)
+	importDocs, err := provider.ImportDocs(resDocs)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Import syntax not found for '%v' resource", r.Type)
 	}
-
-	syntaxes := []string{}
-	doc.Find("pre").Each(func(i int, item *goquery.Selection) {
-		if strings.Contains(item.Text(), "terraform import "+r.Type) {
-			for _, i := range strings.Split(strings.TrimSpace(item.Text()), "\n") {
-				syntaxes = append(syntaxes, strings.TrimSpace(i)[2:])
-			}
-		}
-	})
-
-	if len(syntaxes) == 0 {
-		return nil, &importSyntaxNotFoundError{}
-	}
-	return syntaxes, nil
+	return importDocs, nil
 }
