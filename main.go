@@ -4,8 +4,15 @@ import (
 	"fmt"
 	"os"
 
-	resource "github.com/wilson-codeminus/tfis/resource"
+	"github.com/wils0ns/tfis/resource"
 )
+
+func printErrorAndExit(e error) {
+	if e != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", e)
+		os.Exit(1)
+	}
+}
 
 func main() {
 
@@ -15,20 +22,17 @@ func main() {
 		os.Exit(0)
 	}
 
-	resource := resource.New(os.Args[1])
-	url, err := resource.GetDocUrl()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
+	resource, err := resource.New(os.Args[1])
+	printErrorAndExit(err)
+
+	url, err := resource.DocsURL()
+	printErrorAndExit(err)
+
 	fmt.Println("==>", resource.Type)
 	fmt.Println("Documentation URL:", url)
 
-	syntaxes, err := resource.GetImportSyntaxes(nil)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
+	syntaxes, err := resource.ImportSyntax()
+	printErrorAndExit(err)
 
 	fmt.Println("Import formats:")
 	for _, s := range syntaxes {
