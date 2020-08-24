@@ -12,7 +12,7 @@ cd tfis
 go install
 ```
 
-Or downloading the binary for a particular [release](https://github.com/wils0ns/tfis/releases).
+Or download the binary for a particular [release](https://github.com/wils0ns/tfis/releases).
 
 ## Use
 
