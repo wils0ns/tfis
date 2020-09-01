@@ -1,6 +1,8 @@
 # tfis
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/wils0ns/tfis?style=flat-square)](https://goreportcard.com/report/github.com/wils0ns/tfis)
+[![GoDoc](https://img.shields.io/badge/go-docs-blue.svg)](http://godoc.org/github.com/wils0ns/tfis)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wils0ns/tfis)](https://goreportcard.com/report/github.com/wils0ns/tfis)
+[![Codecov](https://img.shields.io/codecov/c/github/wils0ns/tfis.svg)](https://codecov.io/gh/wils0ns/tfis)
 
 Terraform import syntax
 
