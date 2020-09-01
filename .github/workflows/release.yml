@@ -8,9 +8,7 @@ on:
     branches:
       - master
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+jobs:  
   goreleaser:
     runs-on: ubuntu-latest
     steps:
