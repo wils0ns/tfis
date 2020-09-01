@@ -1,5 +1,7 @@
 # tfis
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/wils0ns/tfis?style=flat-square)](https://goreportcard.com/report/github.com/wils0ns/tfis)
+
 Terraform import syntax
 
 ## Install
